@@ -5,7 +5,7 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playKick(time) {
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
-  
+
   osc.type = "sine";
   osc.frequency.setValueAtTime(150, time);
   osc.frequency.exponentialRampToValueAtTime(0.001, time + 0.5);
@@ -77,8 +77,13 @@ function playChord(time) {
 // ======== SEQUENCER LOGIC =========
 const steps = document.querySelectorAll('.step');
 let currentStep = 0;
-const bpm = 120;
-const interval = (60 / bpm) / 2; // 8th notes
+let bpm = 120;
+let isPlaying = false;
+let timer;
+
+function getInterval() {
+  return (60 / bpm) / 2; // 8th notes
+}
 
 function scheduler() {
   const now = audioCtx.currentTime;
@@ -100,7 +105,7 @@ function scheduler() {
   });
 
   currentStep = (currentStep + 1) % 8;
-  setTimeout(scheduler, interval * 1000);
+  timer = setTimeout(scheduler, getInterval() * 1000);
 }
 
 // ======== STEP TOGGLING =========
@@ -110,10 +115,30 @@ steps.forEach(step => {
   });
 });
 
-// ======== START SEQUENCER ON USER ACTION =========
-document.body.addEventListener('click', () => {
-  if (audioCtx.state === "suspended") {
-    audioCtx.resume();
+// ======== CONTROLS =========
+const playBtn = document.getElementById('playBtn');
+const stopBtn = document.getElementById('stopBtn');
+const tempoSlider = document.getElementById('tempo');
+const tempoValue = document.getElementById('tempoValue');
+
+playBtn.addEventListener('click', () => {
+  if (!isPlaying) {
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+    isPlaying = true;
+    scheduler();
   }
-  scheduler();
-}, { once: true });
+});
+
+stopBtn.addEventListener('click', () => {
+  isPlaying = false;
+  clearTimeout(timer);
+  currentStep = 0;
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('playing'));
+});
+
+tempoSlider.addEventListener('input', e => {
+  bpm = parseInt(e.target.value, 10);
+  tempoValue.textContent = bpm;
+});
