@@ -1,8 +1,39 @@
-import { micTest, loop, exportStems } from './audio.js';
+import { notes, startRecord, stopRecord, playLoop, exportDraft } from './audio.js';
 
-document.getElementById('micBtn').onclick = micTest;
-document.getElementById('loopBtn').onclick = loop;
-document.getElementById('expBtn').onclick = exportStems;
+// build mini piano
+const piano = document.getElementById('piano');
+const whiteKeys = [0,2,4,5,7,9,11,12]; // indices of white keys
+whiteKeys.forEach(idx => {
+  const btn = document.createElement('button');
+  btn.textContent = notes[idx];
+  btn.className = 'white';
+  btn.onclick = () => synth.triggerAttackRelease(notes[idx], '8n');
+  piano.appendChild(btn);
+});
+[1,3,6,8,10].forEach(idx => {
+  const btn = document.createElement('button');
+  btn.textContent = notes[idx];
+  btn.className = 'black';
+  btn.onclick = () => synth.triggerAttackRelease(notes[idx], '8n');
+  piano.appendChild(btn);
+});
 
-// Register Service Worker
+// record melody while you play
+let recording = false;
+document.getElementById('recBtn').addEventListener('click', () => {
+  if (!recording) {
+    startRecord();
+    recording = true;
+    document.getElementById('recBtn').textContent = '⏹ Stop';
+  } else {
+    stopRecord();
+    recording = false;
+    document.getElementById('recBtn').textContent = '⏺ Record';
+  }
+});
+
+document.getElementById('loopBtn').addEventListener('click', playLoop);
+document.getElementById('expBtn').addEventListener('click', exportDraft);
+
+// register service worker
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./src/sw.js');
