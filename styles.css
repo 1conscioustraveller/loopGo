@@ -17,88 +17,30 @@ body {
   padding: 20px;
   width: 350px;
   text-align: center;
-  box-sizing: border-box;
-}
-
-/* Minimal Toggle Dot */
-.minimal-toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 10px;
-  justify-content: center;
-}
-
-.minimal-toggle input {
-  display: none;
-}
-
-.indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: #222;
-  border: 2px solid #00ccff;
-  transition: all 0.3s ease;
-}
-
-.minimal-toggle input:checked ~ .indicator {
-  background-color: #00ccff;
-  box-shadow: 0 0 8px #00ccff;
 }
 
 /* FX buttons */
 .fx-section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 4px;
-  margin-bottom: 5px;
+  gap: 8px;
+  margin-bottom: 15px;
 }
 
 .fx-btn {
   background: #0033cc;
   border: none;
-  padding: 6px 4px;
+  padding: 10px;
   color: #00ccff;
-  font-weight: normal;
+  font-weight: bold;
   cursor: pointer;
-  border-radius: 3px;
-  font-size: 12px;
+  border-radius: 5px;
 }
 .fx-btn:hover {
   background: #0055ff;
 }
 
-.fx-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.fx-block {
-  background: #222;
-  padding: 8px;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.fx-block label {
-  display: block;
-  font-size: 0.7rem;
-  color: #aaa;
-  margin-top: 4px;
-}
-
-.fx-block input[type="range"] {
-  width: 100%;
-  margin: 5px 0;
-}
-
-/* Record buttons */
+/* Rec buttons */
 .rec-section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -119,9 +61,15 @@ body {
   background: #006699;
 }
 
-/* Sequencers */
+/* Sequencer */
 .sequencer {
   margin-bottom: 25px;
+}
+
+.sequencer h2 {
+  margin: 10px 0;
+  font-size: 16px;
+  letter-spacing: 2px;
 }
 
 .grid {
@@ -189,17 +137,39 @@ body {
   box-shadow: 0 0 10px #ff3399;
 }
 
-.fx-controls {
-  display: none;
-  margin-top: 10px;
+.fx-section {
+  margin-top: 20px;
+  padding: 15px;
+  background: #111;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
 }
 
-.fx-controls.show {
+.fx-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.fx-block {
+  background: #222;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.fx-block label {
   display: block;
-  animation: fadeIn 0.3s ease-in-out;
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-top: 6px;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+.fx-block input[type="range"] {
+  width: 100%;
 }
+
+
+
+
+
