@@ -1,3 +1,46 @@
+document.querySelectorAll(".fx-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const targetId = btn.dataset.target;
+    const panel = document.getElementById(targetId);
+
+    // Toggle visual + audio FX
+    if (panel.classList.contains("show")) {
+      panel.classList.remove("show");
+      deactivateFX(targetId); // helper to bypass effect
+    } else {
+      panel.classList.add("show");
+      activateFX(targetId); // helper to enable effect
+    }
+  });
+});
+
+// Simple helpers
+function activateFX(id) {
+  switch (id) {
+    case "fx1": lowpass.frequency.value = document.getElementById("lowpassCutoff").value; break;
+    case "fx2": highpass.frequency.value = document.getElementById("highpassCutoff").value; break;
+    case "fx3": distortion.curve = makeDistortionCurve(document.getElementById("distAmount").value); break;
+    case "fx4": delay.delayTime.value = document.getElementById("delayTime").value; break;
+    case "fx5": /* handled in slider */ break;
+    case "fx6": pitchShifterActive = true; break;
+    case "fx7": lfo.frequency.value = document.getElementById("chorusSpeed").value; break;
+    case "fx8": masterGain.gain.value = document.getElementById("masterVolume").value; break;
+  }
+}
+
+function deactivateFX(id) {
+  switch (id) {
+    case "fx1": lowpass.frequency.value = 20000; break; // bypass
+    case "fx2": highpass.frequency.value = 20; break;
+    case "fx3": distortion.curve = makeDistortionCurve(0); break;
+    case "fx4": delay.delayTime.value = 0; break;
+    case "fx5": reverb.buffer = null; break;
+    case "fx6": pitchShifterActive = false; break;
+    case "fx7": lfo.frequency.value = 0; break;
+    case "fx8": masterGain.gain.value = 1; break;
+  }
+}
+
 // ======== AUDIO CONTEXT =========
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
