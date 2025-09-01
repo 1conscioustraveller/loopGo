@@ -1,9 +1,9 @@
 import { notes, startRecord, stopRecord, playLoop, exportDraft } from './audio.js';
 
-// build mini piano
+// build one-octave mini piano
 const piano = document.getElementById('piano');
-const whiteKeys = [0,2,4,5,7,9,11,12]; // indices of white keys
-whiteKeys.forEach(idx => {
+const whiteIdx = [0,2,4,5,7,9,11,12];
+whiteIdx.forEach(idx => {
   const btn = document.createElement('button');
   btn.textContent = notes[idx];
   btn.className = 'white';
@@ -18,22 +18,14 @@ whiteKeys.forEach(idx => {
   piano.appendChild(btn);
 });
 
-// record melody while you play
+// record / loop / export buttons
 let recording = false;
 document.getElementById('recBtn').addEventListener('click', () => {
-  if (!recording) {
-    startRecord();
-    recording = true;
-    document.getElementById('recBtn').textContent = '⏹ Stop';
-  } else {
-    stopRecord();
-    recording = false;
-    document.getElementById('recBtn').textContent = '⏺ Record';
-  }
+  if (!recording) { startRecord(); recording = true; document.getElementById('recBtn').textContent = '⏹ Stop'; }
+  else { stopRecord(); recording = false; document.getElementById('recBtn').textContent = '⏺ Record'; }
 });
-
 document.getElementById('loopBtn').addEventListener('click', playLoop);
 document.getElementById('expBtn').addEventListener('click', exportDraft);
 
-// register service worker
+// service worker registration
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./src/sw.js');
