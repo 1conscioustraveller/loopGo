@@ -17,9 +17,7 @@
     </div>
 
     <!-- Effects Buttons -->
-    
     <div class="fx-section">
-    
       <div class="fx-grid">
         <div class="fx-block">
           <button class="fx-btn" data-target="fx1">Lowpass</button>
@@ -87,8 +85,6 @@
       </div>
     </div>
 
-
-
     <!-- Record Buttons -->
     <div class="rec-section">
       <button class="rec-btn">rec1</button>
@@ -97,9 +93,13 @@
       <button class="rec-btn">rec4</button>
     </div>
 
-    <!-- Sequencers -->
+    <!-- Sequencers with Minimal Toggle -->
     <div class="sequencer">
-      <h2>KICK</h2>
+      <label class="minimal-toggle">
+        <input type="checkbox" data-track="kick" checked>
+        <span class="indicator"></span>
+        KICK
+      </label>
       <div class="grid">
         <div class="step"></div><div class="step"></div><div class="step"></div><div class="step"></div>
         <div class="step"></div><div class="step"></div><div class="step"></div><div class="step"></div>
@@ -107,7 +107,11 @@
     </div>
 
     <div class="sequencer">
-      <h2>BASS</h2>
+      <label class="minimal-toggle">
+        <input type="checkbox" data-track="bass" checked>
+        <span class="indicator"></span>
+        BASS
+      </label>
       <div class="grid">
         <div class="step"></div><div class="step"></div><div class="step"></div><div class="step"></div>
         <div class="step"></div><div class="step"></div><div class="step"></div><div class="step"></div>
@@ -115,7 +119,11 @@
     </div>
 
     <div class="sequencer">
-      <h2>SNARE</h2>
+      <label class="minimal-toggle">
+        <input type="checkbox" data-track="snare" checked>
+        <span class="indicator"></span>
+        SNARE
+      </label>
       <div class="grid">
         <div class="step"></div><div class="step"></div><div class="step"></div><div class="step"></div>
         <div class="step"></div><div class="step"></div><div class="step"></div><div class="step"></div>
@@ -123,7 +131,11 @@
     </div>
 
     <div class="sequencer">
-      <h2>CHORD LOOP</h2>
+      <label class="minimal-toggle">
+        <input type="checkbox" data-track="chord" checked>
+        <span class="indicator"></span>
+        CHORD LOOP
+      </label>
       <div class="grid">
         <div class="step"></div><div class="step"></div><div class="step"></div><div class="step"></div>
         <div class="step"></div><div class="step"></div><div class="step"></div><div class="step"></div>
@@ -132,5 +144,31 @@
   </div>
 
   <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Toggle step activation
+      document.querySelectorAll('.step').forEach(step => {
+        step.addEventListener('click', function() {
+          this.classList.toggle('active');
+        });
+      });
+
+      // Toggle track visibility via dot toggle
+      document.querySelectorAll('.minimal-toggle input').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          const sequencer = this.closest('.sequencer');
+          if (this.checked) {
+            sequencer.querySelectorAll('.step').forEach(step => {
+              step.style.opacity = '1';
+            });
+          } else {
+            sequencer.querySelectorAll('.step').forEach(step => {
+              step.style.opacity = '0.3';
+            });
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>
