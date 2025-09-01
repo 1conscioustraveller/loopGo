@@ -23,7 +23,7 @@ body {
 .fx-section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: 5px;
   margin-bottom: 15px;
 }
 
