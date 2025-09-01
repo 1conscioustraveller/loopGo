@@ -2,20 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Draft-DAW</title>
   <link rel="manifest" href="manifest.json"/>
-  <link rel="icon" href="src/assets/icons/192.png"/>
   <style>
     body{margin:0;font-family:sans-serif;background:#111;color:#fff}
-    button{display:block;width:90%;margin:1rem auto;padding:1rem;font-size:1.2rem}
+    button{padding:.8rem 1rem;margin:.2rem;font-size:1rem;border:none;border-radius:4px}
+    .white{background:#fff;color:#111} .black{background:#222;color:#fff}
+    #piano{display:flex;justify-content:center;flex-wrap:wrap;margin-bottom:1rem}
   </style>
 </head>
 <body>
   <h2 style="text-align:center">Draft-DAW</h2>
-  <button id="micBtn">Mic Test</button>
-  <button id="loopBtn">Loop</button>
-  <button id="expBtn">Export Stems</button>
+
+  <!-- 1-octave mini piano -->
+  <div id="piano"></div>
+
+  <button id="recBtn">⏺ Record</button>
+  <button id="loopBtn">▶ Loop</button>
+  <button id="expBtn">📦 Export</button>
 
   <script type="module" src="src/audio.js"></script>
   <script type="module" src="src/ui.js"></script>
