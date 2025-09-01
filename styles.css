@@ -17,30 +17,59 @@ body {
   padding: 20px;
   width: 350px;
   text-align: center;
+  box-sizing: border-box; /* Added to include padding in width calculation */
 }
 
 /* FX buttons */
 .fx-section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 2px;
+  gap: 4px; /* Reduced from 2px to 4px for better spacing */
   margin-bottom: 5px;
 }
 
 .fx-btn {
   background: #0033cc;
   border: none;
-  padding: 5px;
+  padding: 6px 4px; /* Reduced padding */
   color: #00ccff;
-  font-weight: auto;
+  font-weight: normal; /* Changed from 'auto' to 'normal' */
   cursor: pointer;
-  border-radius: 1px;
+  border-radius: 3px;
+  font-size: 12px; /* Added smaller font size */
 }
 .fx-btn:hover {
   background: #0055ff;
 }
 
-/* Rec buttons */
+/* FX Grid and Blocks - UPDATED */
+.fx-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Changed from 4 to 2 columns */
+  gap: 8px; /* Reduced gap */
+  margin-top: 10px;
+}
+
+.fx-block {
+  background: #222;
+  padding: 8px; /* Reduced padding */
+  border-radius: 8px;
+  text-align: center;
+}
+
+.fx-block label {
+  display: block;
+  font-size: 0.7rem; /* Reduced font size */
+  color: #aaa;
+  margin-top: 4px; /* Reduced margin */
+}
+
+.fx-block input[type="range"] {
+  width: 100%;
+  margin: 5px 0; /* Added margin for spacing */
+}
+
+/* Other existing styles remain the same */
 .rec-section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -61,7 +90,6 @@ body {
   background: #006699;
 }
 
-/* Sequencer */
 .sequencer {
   margin-bottom: 25px;
 }
@@ -100,7 +128,6 @@ body {
   border: 2px solid #ffffff;
 }
 
-/* Controls */
 .controls {
   margin-bottom: 20px;
 }
@@ -136,38 +163,6 @@ body {
   box-shadow: 0 0 10px #ff3399;
 }
 
-.fx-section {
-  margin-top: 20px;
-  padding: 15px;
-  background: #111;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
-}
-
-.fx-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-}
-
-.fx-block {
-  background: #222;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.fx-block label {
-  display: block;
-  font-size: 0.8rem;
-  color: #aaa;
-  margin-top: 6px;
-}
-
-.fx-block input[type="range"] {
-  width: 100%;
-}
-
 .fx-controls {
   display: none;
   margin-top: 10px;
@@ -182,4 +177,3 @@ body {
   from { opacity: 0; transform: translateY(-5px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
