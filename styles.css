@@ -30,11 +30,11 @@ body {
 .fx-btn {
   background: #0033cc;
   border: none;
-  padding: 10px;
+  padding: 8px;
   color: #00ccff;
-  font-weight: bold;
+  font-weight: auto;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 1px;
 }
 .fx-btn:hover {
   background: #0055ff;
