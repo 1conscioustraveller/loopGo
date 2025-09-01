@@ -99,3 +99,87 @@ body {
 .step.playing {
   border: 2px solid #ffffff;
 }
+
+/* Controls */
+.controls {
+  margin-bottom: 20px;
+}
+
+.controls button {
+  background: #0033cc;
+  border: none;
+  padding: 8px 12px;
+  margin: 0 5px;
+  color: #00ccff;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.controls button:hover {
+  background: #0055ff;
+}
+
+.controls label {
+  margin-left: 15px;
+  font-size: 14px;
+}
+
+#tempo {
+  width: 150px;
+  margin-left: 10px;
+}
+
+.fx-btn.active {
+  background: #ff3399;
+  color: #fff;
+  box-shadow: 0 0 10px #ff3399;
+}
+
+.fx-section {
+  margin-top: 20px;
+  padding: 15px;
+  background: #111;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+}
+
+.fx-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.fx-block {
+  background: #222;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.fx-block label {
+  display: block;
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-top: 6px;
+}
+
+.fx-block input[type="range"] {
+  width: 100%;
+}
+
+.fx-controls {
+  display: none;
+  margin-top: 10px;
+}
+
+.fx-controls.show {
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
