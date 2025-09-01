@@ -17,59 +17,88 @@ body {
   padding: 20px;
   width: 350px;
   text-align: center;
-  box-sizing: border-box; /* Added to include padding in width calculation */
+  box-sizing: border-box;
+}
+
+/* Minimal Toggle Dot */
+.minimal-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  justify-content: center;
+}
+
+.minimal-toggle input {
+  display: none;
+}
+
+.indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #222;
+  border: 2px solid #00ccff;
+  transition: all 0.3s ease;
+}
+
+.minimal-toggle input:checked ~ .indicator {
+  background-color: #00ccff;
+  box-shadow: 0 0 8px #00ccff;
 }
 
 /* FX buttons */
 .fx-section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 4px; /* Reduced from 2px to 4px for better spacing */
+  gap: 4px;
   margin-bottom: 5px;
 }
 
 .fx-btn {
   background: #0033cc;
   border: none;
-  padding: 6px 4px; /* Reduced padding */
+  padding: 6px 4px;
   color: #00ccff;
-  font-weight: normal; /* Changed from 'auto' to 'normal' */
+  font-weight: normal;
   cursor: pointer;
   border-radius: 3px;
-  font-size: 12px; /* Added smaller font size */
+  font-size: 12px;
 }
 .fx-btn:hover {
   background: #0055ff;
 }
 
-/* FX Grid and Blocks - UPDATED */
 .fx-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Changed from 4 to 2 columns */
-  gap: 8px; /* Reduced gap */
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
   margin-top: 10px;
 }
 
 .fx-block {
   background: #222;
-  padding: 8px; /* Reduced padding */
+  padding: 8px;
   border-radius: 8px;
   text-align: center;
 }
 
 .fx-block label {
   display: block;
-  font-size: 0.7rem; /* Reduced font size */
+  font-size: 0.7rem;
   color: #aaa;
-  margin-top: 4px; /* Reduced margin */
+  margin-top: 4px;
 }
 
 .fx-block input[type="range"] {
   width: 100%;
-  margin: 5px 0; /* Added margin for spacing */
+  margin: 5px 0;
 }
 
-/* Other existing styles remain the same */
+/* Record buttons */
 .rec-section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -90,14 +119,9 @@ body {
   background: #006699;
 }
 
+/* Sequencers */
 .sequencer {
   margin-bottom: 25px;
-}
-
-.sequencer h2 {
-  margin: 10px 0;
-  font-size: 16px;
-  letter-spacing: 2px;
 }
 
 .grid {
@@ -124,10 +148,12 @@ body {
   background: #00ccff;
   box-shadow: 0 0 10px #00ccff;
 }
+
 .step.playing {
   border: 2px solid #ffffff;
 }
 
+/* Controls */
 .controls {
   margin-bottom: 20px;
 }
