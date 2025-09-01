@@ -1,7 +1,4 @@
-Merged & de-duplicated stylesheet (all unique rules kept, duplicates removed, and everything re-ordered for clarity).
-
-```css
-/* ===== General ===== */
+/* General */
 body {
   background-color: #001a66;
   color: #00ccff;
@@ -22,44 +19,12 @@ body {
   text-align: center;
 }
 
-/* ===== FX Section (buttons & advanced) ===== */
+/* FX buttons */
 .fx-section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
   margin-bottom: 15px;
-}
-
-.fx-section.advanced {
-  margin-top: 20px;
-  padding: 15px;
-  background: #111;
-  border-radius: 12px;
-  box-shadow: 0 0 12px rgba(255,255,255,0.1);
-}
-
-.fx-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-}
-
-.fx-block {
-  background: #222;
-  padding: 10px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.fx-block label {
-  display: block;
-  font-size: 0.8rem;
-  color: #aaa;
-  margin-top: 6px;
-}
-
-.fx-block input[type="range"] {
-  width: 100%;
 }
 
 .fx-btn {
@@ -70,32 +35,12 @@ body {
   font-weight: bold;
   cursor: pointer;
   border-radius: 5px;
-  transition: background 0.2s;
 }
 .fx-btn:hover {
   background: #0055ff;
 }
-.fx-btn.active {
-  background: #ff3399;
-  color: #fff;
-  box-shadow: 0 0 10px #ff3399;
-}
 
-.fx-controls {
-  display: none;
-  margin-top: 10px;
-}
-.fx-controls.show {
-  display: block;
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ===== Rec buttons ===== */
+/* Rec buttons */
 .rec-section {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -111,13 +56,12 @@ body {
   font-weight: bold;
   cursor: pointer;
   border-radius: 5px;
-  transition: background 0.2s;
 }
 .rec-btn:hover {
   background: #006699;
 }
 
-/* ===== Sequencer ===== */
+/* Sequencer */
 .sequencer {
   margin-bottom: 25px;
 }
@@ -143,18 +87,21 @@ body {
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
 }
+
 .step:hover {
   background: #0055ff;
 }
+
 .step.active {
   background: #00ccff;
   box-shadow: 0 0 10px #00ccff;
 }
+
 .step.playing {
   border: 2px solid #ffffff;
 }
 
-/* ===== Transport Controls ===== */
+/* Controls */
 .controls {
   margin-bottom: 20px;
 }
@@ -168,8 +115,8 @@ body {
   font-weight: bold;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s;
 }
+
 .controls button:hover {
   background: #0055ff;
 }
@@ -183,4 +130,9 @@ body {
   width: 150px;
   margin-left: 10px;
 }
-```
+
+.fx-btn.active {
+  background: #ff3399;
+  color: #fff;
+  box-shadow: 0 0 10px #ff3399;
+}
