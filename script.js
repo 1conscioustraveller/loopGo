@@ -1,92 +1,84 @@
-// ======== TRACK STATES =========
-// Track mute states (dot toggles)
-let trackActive = {
-  kick: true,
-  bass: true,
-  snare: true,
-  chord: true
-};
-
-// Track-by-track FX bypass state (FX toggles)
-let trackFXEnabled = {
-  kick: true,
-  bass: true,
-  snare: true,
-  chord: true
-};
-
-// ======== STEP TOGGLING =========
-document.querySelectorAll('.step').forEach(step => {
-  step.addEventListener('click', () => {
-    step.classList.toggle('active');
-  });
-});
-
-// ======== DOT TOGGLES (mute/unmute tracks) =========
-document.querySelectorAll('.minimal-toggle input').forEach(checkbox => {
-  checkbox.addEventListener('change', function() {
-    const track = this.dataset.track;
-    trackActive[track] = this.checked; // mute/unmute
-  });
-});
-
-// ======== FX TOGGLES (bypass FX for a track) =========
-document.querySelectorAll(".fx-toggle").forEach(toggle => {
-  toggle.addEventListener("change", e => {
-    const track = e.target.dataset.track;
-    trackFXEnabled[track] = e.target.checked;
-
-    // Optional: dim sequencer steps when FX are bypassed
-    const sequencer = e.target.closest(".sequencer");
-    if (sequencer) {
-      sequencer.querySelectorAll(".step").forEach(step => {
-        step.style.opacity = e.target.checked ? "1" : "0.3";
-      });
-    }
-  });
-});
-
-// ======== AUDIO CONTEXT + FX NODES =========
+// ======== AUDIO CONTEXT =========
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-const masterGain = audioCtx.createGain();
-masterGain.connect(audioCtx.destination);
-masterGain.gain.value = 1;
 
-// Example FX nodes (define all your FX here)
+// ======== MASTER FX CHAIN =========
+const masterGain = audioCtx.createGain();
+masterGain.gain.value = 1;
+masterGain.connect(audioCtx.destination);
+
+// FX Nodes
 const lowpass = audioCtx.createBiquadFilter();
 lowpass.type = "lowpass";
+lowpass.frequency.value = 20000;
+
 const highpass = audioCtx.createBiquadFilter();
 highpass.type = "highpass";
-const distortion = audioCtx.createWaveShaper();
-const delay = audioCtx.createDelay();
-const reverb = audioCtx.createConvolver();
-const chorus = audioCtx.createGain(); // placeholder
+highpass.frequency.value = 20;
 
-// Track FX active state (global FX toggles/buttons)
+const distortion = audioCtx.createWaveShaper();
+function makeDistortionCurve(amount = 50) {
+  let k = typeof amount === 'number' ? amount : 50;
+  let n_samples = 44100;
+  let curve = new Float32Array(n_samples);
+  let deg = Math.PI / 180;
+  for (let i = 0; i < n_samples; ++i) {
+    let x = i * 2 / n_samples - 1;
+    curve[i] = (3 + k) * x * 20 * deg / (Math.PI + k * Math.abs(x));
+  }
+  return curve;
+}
+distortion.curve = makeDistortionCurve(100);
+distortion.oversample = '4x';
+
+const delay = audioCtx.createDelay();
+delay.delayTime.value = 0.25;
+const feedback = audioCtx.createGain();
+feedback.gain.value = 0.3;
+delay.connect(feedback).connect(delay);
+
+const reverb = audioCtx.createConvolver();
+// simple fake impulse response
+const reverbBuffer = audioCtx.createBuffer(2, audioCtx.sampleRate * 2, audioCtx.sampleRate);
+for (let ch = 0; ch < 2; ch++) {
+  const data = reverbBuffer.getChannelData(ch);
+  for (let i = 0; i < data.length; i++) {
+    data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / data.length, 2);
+  }
+}
+reverb.buffer = reverbBuffer;
+
+const chorus = audioCtx.createDelay();
+chorus.delayTime.value = 0.03;
+const lfo = audioCtx.createOscillator();
+const lfoGain = audioCtx.createGain();
+lfoGain.gain.value = 0.01;
+lfo.frequency.value = 5;
+lfo.connect(lfoGain).connect(chorus.delayTime);
+lfo.start();
+
 let fxActive = {
   lowpass: false,
   highpass: false,
   distortion: false,
   delay: false,
   reverb: false,
-  chorus: false
+  pitch: false,
+  chorus: false,
+  mute: false
 };
 
-// ======== BUILD AUDIO ROUTING =========
-function buildChain(source, track) {
+// Build chain dynamically
+function buildChain(source) {
   let node = source;
 
-  if (trackFXEnabled[track]) {
-    // Pass through active FX chain
-    if (fxActive.lowpass) node = node.connect(lowpass);
-    if (fxActive.highpass) node = node.connect(highpass);
-    if (fxActive.distortion) node = node.connect(distortion);
-    if (fxActive.delay) node = node.connect(delay);
-    if (fxActive.reverb) node = node.connect(reverb);
-    if (fxActive.chorus) node = node.connect(chorus);
-  }
+  if (fxActive.lowpass) node = node.connect(lowpass);
+  if (fxActive.highpass) node = node.connect(highpass);
+  if (fxActive.distortion) node = node.connect(distortion);
+  if (fxActive.delay) node = node.connect(delay);
+  if (fxActive.reverb) node = node.connect(reverb);
+  if (fxActive.chorus) node = node.connect(chorus);
 
-  // Always connect last node to master
+  // Always connect to master
   node.connect(masterGain);
 }
 
@@ -103,39 +95,20 @@ function playKick(time) {
   gain.gain.exponentialRampToValueAtTime(0.001, time + 0.5);
 
   osc.connect(gain);
-  buildChain(gain, "kick");
-
-  osc.start(time);
-  osc.stop(time + 0.5);
-}
-
-function playBass(time) {
-  const osc = audioCtx.createOscillator();
-  osc.type = "sawtooth";
-  osc.frequency.value = 55;
-
-  const gain = audioCtx.createGain();
-  gain.gain.setValueAtTime(0.3, time);
-  gain.gain.exponentialRampToValueAtTime(0.001, time + 0.5);
-
-  osc.connect(gain);
-  buildChain(gain, "bass");
-
+  buildChain(gain);
   osc.start(time);
   osc.stop(time + 0.5);
 }
 
 function playSnare(time) {
-  const bufferSize = audioCtx.sampleRate * 0.2;
-  const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-  const data = buffer.getChannelData(0);
-
-  for (let i = 0; i < bufferSize; i++) {
+  const noiseBuffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.2, audioCtx.sampleRate);
+  const data = noiseBuffer.getChannelData(0);
+  for (let i = 0; i < data.length; i++) {
     data[i] = Math.random() * 2 - 1;
   }
 
   const noise = audioCtx.createBufferSource();
-  noise.buffer = buffer;
+  noise.buffer = noiseBuffer;
 
   const filter = audioCtx.createBiquadFilter();
   filter.type = "highpass";
@@ -145,33 +118,48 @@ function playSnare(time) {
   gain.gain.setValueAtTime(1, time);
   gain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
 
-  noise.connect(filter);
-  filter.connect(gain);
-  buildChain(gain, "snare");
-
+  noise.connect(filter).connect(gain);
+  buildChain(gain);
   noise.start(time);
   noise.stop(time + 0.2);
 }
 
-function playChord(time) {
-  const freqs = [261.63, 329.63, 392.00]; // C major triad
+function playBass(time) {
+  const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
-  gain.gain.setValueAtTime(0.3, time);
-  gain.gain.exponentialRampToValueAtTime(0.001, time + 1.5);
 
-  freqs.forEach(f => {
-    const osc = audioCtx.createOscillator();
-    osc.type = "triangle";
-    osc.frequency.value = f;
-    osc.connect(gain);
-    osc.start(time);
-    osc.stop(time + 1.5);
-  });
+  osc.type = "square";
+  osc.frequency.setValueAtTime(fxActive.pitch ? 110 : 55, time); // FX6 doubles pitch
 
-  buildChain(gain, "chord");
+  gain.gain.setValueAtTime(0.5, time);
+  gain.gain.exponentialRampToValueAtTime(0.001, time + 0.5);
+
+  osc.connect(gain);
+  buildChain(gain);
+  osc.start(time);
+  osc.stop(time + 0.5);
 }
 
-// ======== SEQUENCER =========
+function playChord(time) {
+  const freqs = [261.63, 329.63, 392.00]; // C major chord
+  freqs.forEach(freq => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(fxActive.pitch ? freq * 2 : freq, time);
+
+    gain.gain.setValueAtTime(0.2, time);
+    gain.gain.exponentialRampToValueAtTime(0.001, time + 1);
+
+    osc.connect(gain);
+    buildChain(gain);
+    osc.start(time);
+    osc.stop(time + 1);
+  });
+}
+
+// ======== SEQUENCER (unchanged) =========
 const steps = document.querySelectorAll('.step');
 let currentStep = 0;
 let bpm = 120;
@@ -193,12 +181,10 @@ function scheduler() {
     step.classList.add('playing');
 
     if (step.classList.contains('active')) {
-      switch (seqIndex) {
-        case 0: if (trackActive.kick) playKick(now); break;
-        case 1: if (trackActive.bass) playBass(now); break;
-        case 2: if (trackActive.snare) playSnare(now); break;
-        case 3: if (trackActive.chord) playChord(now); break;
-      }
+      if (seqIndex === 0) playKick(now);
+      if (seqIndex === 1) playBass(now);
+      if (seqIndex === 2) playSnare(now);
+      if (seqIndex === 3) playChord(now);
     }
   });
 
@@ -206,23 +192,57 @@ function scheduler() {
   timer = setTimeout(scheduler, getInterval() * 1000);
 }
 
+// ======== STEP TOGGLING =========
+steps.forEach(step => {
+  step.addEventListener('click', () => {
+    step.classList.toggle('active');
+  });
+});
+
 // ======== CONTROLS =========
-document.getElementById('playBtn').addEventListener('click', () => {
+const playBtn = document.getElementById('playBtn');
+const stopBtn = document.getElementById('stopBtn');
+const tempoSlider = document.getElementById('tempo');
+const tempoValue = document.getElementById('tempoValue');
+
+playBtn.addEventListener('click', () => {
   if (!isPlaying) {
-    if (audioCtx.state === "suspended") audioCtx.resume();
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
     isPlaying = true;
     scheduler();
   }
 });
 
-document.getElementById('stopBtn').addEventListener('click', () => {
+stopBtn.addEventListener('click', () => {
   isPlaying = false;
   clearTimeout(timer);
   currentStep = 0;
   document.querySelectorAll('.step').forEach(s => s.classList.remove('playing'));
 });
 
-document.getElementById('tempo').addEventListener('input', e => {
+tempoSlider.addEventListener('input', e => {
   bpm = parseInt(e.target.value, 10);
-  document.getElementById('tempoValue').textContent = bpm;
+  tempoValue.textContent = bpm;
+});
+
+// ======== FX BUTTONS =========
+const fxButtons = document.querySelectorAll('.fx-btn');
+fxButtons.forEach((btn, i) => {
+  btn.addEventListener('click', () => {
+    switch (i) {
+      case 0: fxActive.lowpass = !fxActive.lowpass; break;
+      case 1: fxActive.highpass = !fxActive.highpass; break;
+      case 2: fxActive.distortion = !fxActive.distortion; break;
+      case 3: fxActive.delay = !fxActive.delay; break;
+      case 4: fxActive.reverb = !fxActive.reverb; break;
+      case 5: fxActive.pitch = !fxActive.pitch; break;
+      case 6: fxActive.chorus = !fxActive.chorus; break;
+      case 7: fxActive.mute = !fxActive.mute;
+              masterGain.gain.value = fxActive.mute ? 0 : 1;
+              break;
+    }
+    btn.classList.toggle('active');
+  });
 });
