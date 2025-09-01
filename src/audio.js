@@ -2,44 +2,54 @@ import * as Tone from 'https://cdn.skypack.dev/tone@14.8.49';
 import { Mp3Recorder } from 'https://cdn.skypack.dev/mic-recorder-to-mp3@2.2.2';
 
 await Tone.start();
-const synth = new Tone.Synth().toDestination();
-const drum = new Tone.Players({
-  kick: './src/assets/samples/kick.wav',
-  snare: './src/assets/samples/snare.wav'
-}).toDestination();
+Tone.Transport.bpm.value = 100;
 
-const recorder = new Mp3Recorder({ bitRate: 128 });
-Tone.Transport.bpm.value = 120;
+// --- simple assets: 1-osc synth + 1 generated kick --- //
+const synth = new Tone.Synth({ oscillator: { type: 'triangle' } }).toDestination();
+const kick  = new Tone.MembraneSynth().toDestination();
 
-export const micTest = () => {
-  recorder.start();
-  setTimeout(async () => {
-    const [, blob] = await recorder.stop().getMp3();
-    download(blob, 'mic-test.mp3');
-  }, 3000);
+// --- tiny pattern recorder --- //
+let pattern = []; // [{note, time}]
+let isRecording = false;
+let recStartTicks = 0;
+
+export const startRecord = () => {
+  pattern = [];
+  isRecording = true;
+  recStartTicks = Tone.Transport.ticks;
 };
 
-export const loop = () => {
-  new Tone.Loop(t => synth.triggerAttackRelease('C4', '8n', t), '4n').start();
-  new Tone.Loop(t => drum.player('kick').start(t), '2n').start();
-  Tone.Transport.start();
+export const stopRecord = () => {
+  isRecording = false;
 };
 
-export const exportStems = async () => {
+export const playLoop = () => {
+  Tone.Transport.cancel();
+  pattern.forEach(({note, time}) => {
+    synth.triggerAttackRelease(note, '8n', time);
+  });
+  // 4-on-the-floor kick
+  for (let bar = 0; bar < 4; bar++) {
+    kick.triggerAttackRelease('C1', '8n', Tone.Time(`${bar}:0:0`));
+  }
+  Tone.Transport.start('+0.1');
+};
+
+export const exportDraft = async () => {
   const buffer = await Tone.Offline(() => {
-    const offSynth = new Tone.Synth().toDestination();
-    const offDrum = new Tone.Players({
-      kick: './src/assets/samples/kick.wav',
-      snare: './src/assets/samples/snare.wav'
-    }).toDestination();
-    new Tone.Loop(t => offSynth.triggerAttackRelease('C4', '8n', t), '4n').start();
-    new Tone.Loop(t => offDrum.player('kick').start(t), '2n').start();
+    const offSynth = new Tone.Synth({ oscillator: { type: 'triangle' } }).toDestination();
+    const offKick  = new Tone.MembraneSynth().toDestination();
+    pattern.forEach(({note, time}) => offSynth.triggerAttackRelease(note, '8n', time));
+    for (let bar = 0; bar < 4; bar++) {
+      offKick.triggerAttackRelease('C1', '8n', Tone.Time(`${bar}:0:0`));
+    }
     Tone.Transport.start();
   }, '4m');
   const wav = bufferToWav(buffer);
-  download(new Blob([wav], { type: 'audio/wav' }), 'stem.wav');
+  download(new Blob([wav], {type:'audio/wav'}), 'draft.wav');
 };
 
+// --- helpers --- //
 function download(blob, name) {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -47,7 +57,6 @@ function download(blob, name) {
   a.click();
   URL.revokeObjectURL(a.href);
 }
-
 function bufferToWav(buffer) {
   const len = 44 + buffer.length * buffer.numberOfChannels * 2;
   const arr = new ArrayBuffer(len);
@@ -71,3 +80,6 @@ function bufferToWav(buffer) {
   }
   return arr;
 }
+
+// --- piano keyboard notes ---
+export const notes = ['C4','C#4','D4','D#4','E4','F4','F#4','G4','G#4','A4','A#4','B4','C5'];
