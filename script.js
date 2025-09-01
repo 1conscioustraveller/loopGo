@@ -246,3 +246,42 @@ fxButtons.forEach((btn, i) => {
     btn.classList.toggle('active');
   });
 });
+
+// === SLIDER HANDLERS ===
+document.getElementById("lowpassCutoff").addEventListener("input", e => {
+  lowpass.frequency.value = e.target.value;
+});
+document.getElementById("highpassCutoff").addEventListener("input", e => {
+  highpass.frequency.value = e.target.value;
+});
+document.getElementById("distAmount").addEventListener("input", e => {
+  distortion.curve = makeDistortionCurve(parseFloat(e.target.value));
+});
+document.getElementById("delayTime").addEventListener("input", e => {
+  delay.delayTime.value = parseFloat(e.target.value);
+});
+document.getElementById("delayFeedback").addEventListener("input", e => {
+  feedback.gain.value = parseFloat(e.target.value);
+});
+document.getElementById("reverbDecay").addEventListener("input", e => {
+  const decay = parseFloat(e.target.value);
+  const length = audioCtx.sampleRate * decay;
+  const buffer = audioCtx.createBuffer(2, length, audioCtx.sampleRate);
+  for (let ch = 0; ch < 2; ch++) {
+    const data = buffer.getChannelData(ch);
+    for (let i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / data.length, 2);
+    }
+  }
+  reverb.buffer = buffer;
+});
+document.getElementById("chorusDepth").addEventListener("input", e => {
+  lfoGain.gain.value = parseFloat(e.target.value);
+});
+document.getElementById("chorusSpeed").addEventListener("input", e => {
+  lfo.frequency.value = parseFloat(e.target.value);
+});
+document.getElementById("masterVolume").addEventListener("input", e => {
+  masterGain.gain.value = parseFloat(e.target.value);
+});
+
